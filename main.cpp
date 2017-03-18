@@ -49,42 +49,56 @@ void calculate2( std::vector<int> &nums , int k )
         }
     }
     if( start != k-1 ) dec_l.push_back( std::make_pair(start,k-1) ) ; 
-    
-    o << process_lists( inc_l , dec_l ) << '\n' ; 
+    total = process_lists( inc_l , dec_l ) ;
+    o << total << '\n' ; 
+
     // use previous window information with front and back change to 
     for( int start_w = 1,end_w = k ; start_w < nums.size()-k+1 ; start_w++, end_w++ ) 
-    {
+    {   
         // see if end element can extend any subarrays
         if( nums[end_w] > nums[end_w-1] )
         {
-            if( inc_l.back().second == end_w-1 ) inc_l.back().second++ ; 
-            else inc_l.push_back( std::make_pair(end_w-1,end_w) ) ; 
+            if( inc_l.back().second == end_w-1 ) { inc_l.back().second++ ; }
+            else { inc_l.push_back( std::make_pair(end_w-1,end_w) ) ; }
+
+            int s = inc_l.back().second - inc_l.back().first + 1 ; // s has new subarray size
+            total += s*(s-1)/2 - (s-1)*(s-2)/2 ; 
         }
-        if( nums[end_w] < nums[end_w-1] )
+        else if( nums[end_w] < nums[end_w-1] )
         {
             if( dec_l.back().second == end_w-1 ) dec_l.back().second++ ; 
             else dec_l.push_back( std::make_pair(end_w-1,end_w) ) ; 
+            
+            int s = dec_l.back().second - dec_l.back().first + 1 ; // s has new subarray size
+            total -= s*(s-1)/2 - (s-1)*(s-2)/2 ; 
         }
         if( inc_l.front().first == start_w - 1 )
         {
+            int s = inc_l.front().second - inc_l.front().first + 1 ; // s has new subarray size
+            total -= s*(s-1)/2 - (s-1)*(s-2)/2 ; 
+
             if( inc_l.front().second > start_w ) inc_l.front().first++ ; 
             else inc_l.pop_front() ; 
         }
-        if( dec_l.front().first == start_w - 1 )
+        else if( dec_l.front().first == start_w - 1 )
         {
+            int s = dec_l.front().second - dec_l.front().first + 1 ; // s has new subarray size
+            total += s*(s-1)/2 - (s-1)*(s-2)/2 ; 
+
             if( dec_l.front().second > start_w ) dec_l.front().first++ ; 
             else dec_l.pop_front() ; 
         }
-        o << process_lists( inc_l , dec_l ) << '\n' ; 
+        o << total << '\n' ; 
     }
 }
+
 int main()
 {
     std::ifstream inp ;
     std::ofstream opt ; 
     inp.open("input.txt") ; 
     int n,k ; 
-    if( inp.is_open()  )
+    if( inp.is_open() )
     {
         inp >> n >> k ;  
         std::cout << "LENGTH OF ARRAY:" << n << '\n' << "LENGTH OF WINDOW:" << k << std::endl ; 
