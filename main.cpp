@@ -2,30 +2,35 @@
 #include<iostream>
 #include<vector>
 #include<ctime>
-#include<random>
 #include<list>
+#include<random>
 
 int process_lists( std::list<std::pair<int,int>> &inc_l, std::list<std::pair<int,int>> &dec_l )
 {   
+    /**
+        Given 2 lists, one containing start and ending indices of increasing subranges, and 
+        one containing containing start and ending indices of decreasing subranges, this 
+        function calculates the score of the window containing these lists.
+    */
     int total = 0, s = 0 ; 
     for( auto pair : inc_l )
     {
-        s = pair.second-pair.first + 1 ; 
-        total += (s-1)*s/2 ; 
+        s = pair.second - pair.first + 1 ; // SIZE OF AN INCREASING SUBRANGE
+        total += (s-1)*s/2 ;               // NUMBER OF POSSIBLE SUBRANGES WITHIN THE SUBRANGE
     }
     for( auto pair : dec_l )
     {
-        s = pair.second-pair.first + 1 ; 
-        total -= (s-1)*s/2 ; 
+        s = pair.second - pair.first + 1 ; // SIZE OF A DECREASING SUBRANGE
+        total -= (s-1)*s/2 ;               // NUMBER OF POSSIBLE SUBRANGES WITHIN THE SUBRANGE
     }
     return total ; 
 }
 
-void calculate2( std::vector<int> &nums , int k )
+void calculate( std::vector<int> &nums , int k )
 {
     int total = 0 ; 
     std::ofstream o ; 
-    o.open("answer2.txt") ; 
+    o.open("answer.txt") ; 
     std::list<std::pair<int,int>> inc_l,dec_l ; 
     // Populate inc_l for the first window
     int start = 0 ; 
@@ -94,30 +99,61 @@ void calculate2( std::vector<int> &nums , int k )
 
 int main()
 {
-    std::ifstream inp ;
-    std::ofstream opt ; 
-    inp.open("input.txt") ; 
+    std::cout << "1 - COMPLETE INPUT IS READ FROM FILE \"input.txt\" .     \n"
+              << "2 - manually enter n and k. values will be generated randomly.\n" 
+              << " Please input either 1 or 2..." << std::endl ; 
     int n,k ; 
-    if( inp.is_open() )
+    int option ; 
+    std::cin >> option ; 
+    std::ifstream inp ;
+    if( option == 1 )
     {
-        inp >> n >> k ;  
-        std::cout << "LENGTH OF ARRAY:" << n << '\n' << "LENGTH OF WINDOW:" << k << std::endl ; 
+        inp.open("input.txt") ; 
+        if( inp.is_open() ) inp >> n >> k ;  
+        else 
+        {
+            std::cout << "FILE WAS NOT OPENED . TERMINATING PROGRAM."  ; 
+            return 0 ; 
+        }
+        if( n < 1 || n > 200000 )
+        {
+            std::cout << "N NOT IN RANGE [1,200000], INVALID INPUT" << std::endl ; 
+            return 0 ; 
+        }
+        if( k < 1 || k > n )
+        {
+            std::cout << "k NOT IN RANGE [1,N], INVALID INPUT" << std::endl ; 
+            return 0 ; 
+        }
     }
-    else 
+    else if( option == 2 )
     {
-        std::cout << "FILE WAS NOT OPENED . TERMINATING PROGRAM."  ; 
-        return 0 ; 
+        std::cout << "\nPlease enter n :.. " ;
+        std::cin >> n ; 
+        std::cout << "\nPlease enter k :.. " ;
+        std::cin >> k ; 
+        if( n < 1 || n > 200000 )
+        {
+            std::cout << "N NOT IN RANGE [1,200000], INVALID INPUT" << std::endl ; 
+            return 0 ; 
+        }
+        if( k < 1 || k > n )
+        {
+            std::cout << "k NOT IN RANGE [1,N], INVALID INPUT" << std::endl ; 
+            return 0 ; 
+        }    
     }
-    std::vector<int> nums(n) ;
-    for( int i = 0 ; i < nums.size() ; i++ )
-    {
-        //inp >> nums[i] ; 
-        nums[i] = rand()%1000 ; 
-    }
-    inp.close() ; 
+    std::vector<int> nums(n) ; 
+    if( option == 2 )
+        for( int i = 0 ; i < nums.size() ; i++ ) nums[i] = rand()%1000 ; 
+    else if( option == 1 )
+        for( int i = 0 ; i < nums.size() ; i++ ) inp >> nums[i] ; 
 
+    // ASSUMING THAT THE LIST OF NUMBERS IS WELL DEFINED AND VALID
+    inp.close() ; 
+    std::cout << "LENGTH OF ARRAY:" << n << '\n' << "LENGTH OF WINDOW:" << k << std::endl ; 
     clock_t time = clock() ; 
-    calculate2( nums , k ) ; 
+    calculate( nums , k ) ; 
     std::cout << "ELAPSED TIME:" << (float)(clock()-time )/CLOCKS_PER_SEC << " SECS.." ; 
-    return 0 ;    
+    return 0 ;
 }
