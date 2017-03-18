@@ -1,21 +1,47 @@
-#include<iostream>
 #include<fstream>
+#include<iostream>
 #include<vector>
-
-int calculate( std::vector<int> &d , int k ) 
+#include<ctime>
+#include<random>
+int calculate( std::vector<int> &n , int k , int i )  
 {
+    int total = 0 ;
+    int inc = 0 , dec = 0 ; 
+    for( int end = i+1 ; end <= i+k-1 ; end++ )
+    {
+        if ( n[end] > n[end-1] )
+        {
+            inc++ ;  
+            dec = 0 ; 
+        } 
+        else if ( n[end] < n[end-1] )
+        {
+            dec++ ; 
+            inc = 0 ; 
+        }
+        else
+        {
+            inc = 0 ; 
+            dec = 0 ;
+        }
+        total += inc-dec ; 
 
+    }
+    return total ; 
 }
 
 int main()
 {
-    std::ifstream inp ; 
+    std::ifstream inp ;
+    std::ofstream opt ; 
     inp.open("input.txt") ; 
+    inp.open("answer.txt") ; 
     int n,k ; 
     
     if( inp.is_open()  )
     {
         inp >> n >> k ;  
+        std::cout << "LENGTH OF ARRAY:" << n << '\n' << "LENGTH OF WINDOW:" << k << std::endl ; 
     }
     else 
     {
@@ -25,13 +51,16 @@ int main()
     std::vector<int> nums(n) ;
     std::vector<int> diff(n-1) ;
     for( int i = 0 ; i < nums.size() ; i++ )
-            inp >> nums[i] ; 
-    inp.close() ; 
-    for( int i = 0 ; i < nums.size()-1 ; i++ )
     {
-        if( nums[i] < nums[i+1] ) diff[i] = 1 ; 
-        else if ( nums[i] > nums[i+1] ) diff[i] = -1 ; 
-        else diff[i] = 0 ; 
+        //inp >> nums[i] ; 
+        nums[i] = rand()%1000 ; 
     }
-    calculate( diff , k) ; 
+    inp.close() ; 
+    clock_t time = clock() ; 
+    for( int i = 0 ; i < n - k + 1 ; i++ )
+    {
+        opt << calculate( nums , k , i ) << '\n' ; 
+    }
+    std::cout << "ELAPSED TIME:" << (float)(clock()-time )/CLOCKS_PER_SEC ; 
+    return 0 ;    
 }
