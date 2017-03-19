@@ -5,14 +5,14 @@
 #include<list>
 #include<random>
 
-int process_lists( std::list<std::pair<int,int>> &inc_l, std::list<std::pair<int,int>> &dec_l )
+long long int process_lists( std::list<std::pair<int,int>> &inc_l, std::list<std::pair<int,int>> &dec_l )
 {   
     /**
         Given 2 lists, one containing start and ending indices of increasing subranges, and 
         one containing containing start and ending indices of decreasing subranges, this 
         function calculates the score of the window containing these lists.
     */
-    int total = 0, s = 0 ; 
+    long long int total = 0, s = 0 ; 
     for( auto pair : inc_l )
     {
         s = pair.second - pair.first + 1 ; // SIZE OF AN INCREASING SUBRANGE
@@ -28,7 +28,7 @@ int process_lists( std::list<std::pair<int,int>> &inc_l, std::list<std::pair<int
 
 void calculate( std::vector<int> &nums , int k )
 {
-    int total = 0 ; 
+    long long int total = 0 ; 
     std::ofstream o ; 
     o.open("answer.txt") ; 
     std::list<std::pair<int,int>> inc_l,dec_l ; 
